@@ -1,0 +1,35 @@
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local gameId = 7239319209
+
+local function teleportPlayerToPart(player)
+	local character = player.Character or player.CharacterAdded:Wait()
+	local moneyPrinter = workspace:FindFirstChild("money printer")
+
+	if moneyPrinter then
+		local rootPart = character:WaitForChild("HumanoidRootPart")
+		rootPart.CFrame = moneyPrinter.CFrame
+
+		-- Check for ProximityPrompt and trigger it
+		local proximityPrompt = moneyPrinter:FindFirstChildOfClass("ProximityPrompt")
+		if proximityPrompt then
+			proximityPrompt:InputHoldBegin()
+			task.wait(0.1) -- Wait for a short duration to simulate holding
+			proximityPrompt:InputHoldEnd()
+		end
+	else
+		TeleportService:Teleport(gameId, player)
+	end
+end
+
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function()
+		teleportPlayerToPart(player)
+	end)
+end)
+
+for _, player in Players:GetPlayers() do
+	player.CharacterAdded:Connect(function()
+		teleportPlayerToPart(player)
+	end)
+end
